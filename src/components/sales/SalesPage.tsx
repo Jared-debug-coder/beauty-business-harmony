@@ -13,7 +13,9 @@ import {
   CreditCard,
   CheckCircle,
   PieChart,
-  ArrowRight
+  ArrowRight,
+  Scissors,
+  ShoppingBag
 } from 'lucide-react';
 import { 
   PieChart as RechartsProPieChart, 
