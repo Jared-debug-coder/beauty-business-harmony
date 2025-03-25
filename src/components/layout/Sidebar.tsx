@@ -14,8 +14,12 @@ import {
   UserCircle,
   Package
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+
+interface SidebarProps {
+  onWidthChange?: (width: number) => void;
+}
 
 const sidebarItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -28,100 +32,109 @@ const sidebarItems = [
   { name: 'Settings', path: '/settings', icon: Settings, position: 'bottom' }
 ];
 
-const Sidebar = () => {
+const Sidebar: React.FC<SidebarProps> = ({ onWidthChange }) => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
+    // Call the callback with the new width
+    if (onWidthChange) {
+      onWidthChange(isCollapsed ? 250 : 70);
+    }
   };
 
+  // Notify parent of initial width
+  React.useEffect(() => {
+    if (onWidthChange) {
+      onWidthChange(isCollapsed ? 70 : 250);
+    }
+  }, [isCollapsed, onWidthChange]);
+
   return (
-    <AnimatePresence initial={false}>
-      <motion.div
-        className={cn(
-          "fixed left-0 top-0 h-full bg-sidebar z-30 shadow-xl flex flex-col transition-all duration-300",
-          isCollapsed ? "w-[70px]" : "w-[250px]"
-        )}
-        animate={{ width: isCollapsed ? 70 : 250 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        {/* Sidebar Header */}
-        <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
-          {!isCollapsed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-sidebar-foreground font-semibold text-xl"
-            >
-              BeautySalon
-            </motion.div>
-          )}
-          <button 
-            onClick={toggleSidebar}
-            className="p-1 rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
+    <motion.div
+      className={cn(
+        "fixed left-0 top-0 h-full bg-sidebar z-30 shadow-xl flex flex-col transition-all duration-300",
+        isCollapsed ? "w-[70px]" : "w-[250px]"
+      )}
+      animate={{ width: isCollapsed ? 70 : 250 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+    >
+      {/* Sidebar Header */}
+      <div className="p-4 flex items-center justify-between border-b border-sidebar-border">
+        {!isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-sidebar-foreground font-semibold text-xl"
           >
-            {isCollapsed ? <Menu size={20} /> : <X size={20} />}
-          </button>
+            BeautySalon
+          </motion.div>
+        )}
+        <button 
+          onClick={toggleSidebar}
+          className="p-1 rounded-md text-sidebar-foreground hover:bg-sidebar-accent"
+        >
+          {isCollapsed ? <Menu size={20} /> : <X size={20} />}
+        </button>
+      </div>
+
+      {/* Sidebar Navigation */}
+      <div className="flex-1 overflow-y-auto py-4 flex flex-col justify-between">
+        <div className="space-y-1 px-2">
+          {sidebarItems.filter(item => item.position !== 'bottom').map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={cn(
+                "sidebar-item",
+                location.pathname === item.path 
+                  ? "sidebar-item-active" 
+                  : "sidebar-item-inactive"
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              {!isCollapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {item.name}
+                </motion.span>
+              )}
+            </Link>
+          ))}
         </div>
 
-        {/* Sidebar Navigation */}
-        <div className="flex-1 overflow-y-auto py-4 flex flex-col justify-between">
-          <div className="space-y-1 px-2">
-            {sidebarItems.filter(item => item.position !== 'bottom').map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={cn(
-                  "sidebar-item",
-                  location.pathname === item.path 
-                    ? "sidebar-item-active" 
-                    : "sidebar-item-inactive"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {!isCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    {item.name}
-                  </motion.span>
-                )}
-              </Link>
-            ))}
-          </div>
-
-          <div className="mt-auto space-y-1 px-2">
-            {sidebarItems.filter(item => item.position === 'bottom').map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={cn(
-                  "sidebar-item",
-                  location.pathname === item.path 
-                    ? "sidebar-item-active" 
-                    : "sidebar-item-inactive"
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                {!isCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    {item.name}
-                  </motion.span>
-                )}
-              </Link>
-            ))}
-          </div>
+        <div className="mt-auto space-y-1 px-2">
+          {sidebarItems.filter(item => item.position === 'bottom').map((item) => (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={cn(
+                "sidebar-item",
+                location.pathname === item.path 
+                  ? "sidebar-item-active" 
+                  : "sidebar-item-inactive"
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              {!isCollapsed && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {item.name}
+                </motion.span>
+              )}
+            </Link>
+          ))}
         </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 
