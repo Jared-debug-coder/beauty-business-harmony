@@ -12,7 +12,9 @@ import {
   Receipt,
   Save,
   Building,
-  RefreshCw
+  RefreshCw,
+  CreditCard,
+  CheckCircle
 } from 'lucide-react';
 import { 
   Card, 
