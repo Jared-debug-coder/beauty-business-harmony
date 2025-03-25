@@ -14,6 +14,7 @@ import EmployeesPage from "./components/employees/EmployeesPage";
 import CustomersPage from "./components/customers/CustomersPage";
 import InventoryPage from "./components/inventory/InventoryPage";
 import SalesPage from "./components/sales/SalesPage";
+import SettingsPage from "./components/settings/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App: React.FC = () => (
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/inventory" element={<InventoryPage />} />
               <Route path="/sales" element={<SalesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
